@@ -79,11 +79,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employee.setStatus(StatusConstant.ENABLE);
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.insert(employee);
     }
@@ -117,7 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void updateStatus(Integer status, Long id) {
-        //update employee set status =
+        //update employee set status = {status} where id = {id}
         Employee employee = Employee.builder().status(status).id(id).build();
         employeeMapper.updateById(employee);
     }
