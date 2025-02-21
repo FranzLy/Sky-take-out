@@ -50,6 +50,11 @@ public class DishController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 菜品删除
+     * @param ids
+     * @return
+     */
     @DeleteMapping
     @ApiOperation("菜品删除")
     public Result delete(@RequestParam List<Long> ids) {
@@ -58,6 +63,11 @@ public class DishController {
         return Result.success();
     }
 
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @ApiOperation("根据id查询菜品")
     public Result<DishVO> getById(@PathVariable Long id) {
@@ -66,6 +76,11 @@ public class DishController {
         return Result.success(dishVO);
     }
 
+    /**
+     * 修改菜品
+     * @param dishDTO
+     * @return
+     */
     @PutMapping
     @ApiOperation("修改菜品")
     public Result update(@RequestBody DishDTO dishDTO) {
