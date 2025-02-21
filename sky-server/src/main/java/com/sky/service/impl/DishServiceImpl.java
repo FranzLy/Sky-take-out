@@ -11,6 +11,7 @@ import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.exception.DishNotFoundException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
@@ -20,11 +21,13 @@ import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -111,6 +114,59 @@ public class DishServiceImpl implements DishService {
         LambdaQueryWrapper<DishFlavor> lqwDishFlavor = new LambdaQueryWrapper<>();
         lqwDishFlavor.in(DishFlavor::getDishId, ids);
         dishFlavorMapper.delete(lqwDishFlavor);
+
+    }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getByDishIdWithFlavor(Long id) {
+        DishVO dishVO = new DishVO();
+
+        //查询菜品
+        Dish dish = dishMapper.selectById(id);
+        if (dish == null) {
+            throw new DishNotFoundException(MessageConstant.DISH_NOT_FOUND);
+        }
+
+        //查询菜品对应的口味
+        LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(DishFlavor::getDishId, id);
+        List<DishFlavor> flavors = dishFlavorMapper.selectList(lqw);
+
+        //拷贝
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(flavors);
+        return dishVO;
+    }
+
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
+    @Transactional
+    @Override
+    public void updateWithFlavor(DishDTO dishDTO) {
+        Dish dish = new Dish();
+
+        //插入菜品
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.updateById(dish);
+
+        //口味先删除再插入
+        Long dishId = dish.getId();
+        dishFlavorMapper.delete(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId,dishId));
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && flavors.size() > 0) {
+            flavors.stream().map(item -> {
+                item.setDishId(dishId);
+                return item;
+            }).collect(Collectors.toList());
+            dishFlavorMapper.insertBatch(flavors);
+        }
 
     }
 }
