@@ -105,4 +105,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return pageResult;
     }
 
+    @Override
+    public void updateStatus(Integer status, Long id) {
+        //update employee set status =
+        Employee employee = Employee.builder().status(status).id(id).build();
+        employeeMapper.updateById(employee);
+    }
+
 }
