@@ -88,6 +88,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.insert(employee);
     }
 
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         PageResult pageResult = new PageResult();
@@ -105,10 +110,40 @@ public class EmployeeServiceImpl implements EmployeeService {
         return pageResult;
     }
 
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     */
     @Override
     public void updateStatus(Integer status, Long id) {
         //update employee set status =
         Employee employee = Employee.builder().status(status).id(id).build();
+        employeeMapper.updateById(employee);
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getEmployeeById(Long id) {
+        Employee employee = employeeMapper.selectById(id);
+        if(employee != null) {
+            employee.setPassword("******");
+        }
+        return employee;
+    }
+
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
         employeeMapper.updateById(employee);
     }
 
