@@ -190,7 +190,7 @@ public class DishServiceImpl implements DishService {
      */
     public List<DishVO> listWithFlavor(Dish dish) {
         LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Dish::getId, dish.getId());
+        lqw.eq(Dish::getCategoryId, dish.getCategoryId());
         List<Dish> dishList = dishMapper.selectList(lqw);
 
         List<DishVO> dishVOList = new ArrayList<>();

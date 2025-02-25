@@ -23,3 +23,6 @@ sky:
     cache:
       redis:
         time-to-live: 1800000
+  wechat:
+    appid: wx8f214862cf3af6ad
+    secret: a499046927778f076ec33bb68e35c1bb
