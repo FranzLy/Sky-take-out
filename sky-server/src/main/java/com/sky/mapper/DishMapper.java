@@ -52,4 +52,12 @@ public interface DishMapper extends BaseMapper<Dish> {
      */
     @Select("select a.* from dish a left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = #{setmealId}")
     List<Dish> getBySetmealId(Long setmealId);
+
+    /**
+     * 根据id查询菜品
+     * @param dishId
+     * @return
+     */
+    @Select("select * from dish where id = #{dishId}")
+    Dish getById(Long dishId);
 }
