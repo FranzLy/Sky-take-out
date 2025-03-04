@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,5 +144,43 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+    }
+
+    /**
+     * 处理超时订单
+     */
+    @Override
+    public void processTimeOutOrder() {
+        log.info("处理超时订单");
+        //获取超时订单
+        LocalDateTime time = LocalDateTime.now().plusMinutes(-15);
+        List<Orders> ordersList = orderMapper.getTimeOutOrders(Orders.PENDING_PAYMENT, time);
+        if(ordersList != null && ordersList.size() > 0) {
+            for (Orders orders : ordersList) {
+                orders.setStatus(Orders.CANCELLED);
+                orders.setCancelTime(LocalDateTime.now());
+                orders.setCancelReason("订单超时，自动取消");
+//                orderMapper.update(orders);
+            }
+            orderMapper.updateBatchly(ordersList);
+        }
+    }
+
+    /**
+     * 处理一直处于派送中的订单
+     */
+    @Override
+    public void processInDeliveryOrder() {
+        log.info("处理一直处于派送中的订单");
+        LocalDateTime time = LocalDateTime.now().plusMinutes(-60);
+        List<Orders> ordersList = orderMapper.getTimeOutOrders(Orders.DELIVERY_IN_PROGRESS, time);
+        if(ordersList != null && ordersList.size() > 0) {
+            for (Orders orders : ordersList) {
+                orders.setStatus(Orders.COMPLETED);
+                orders.setCancelTime(LocalDateTime.now());
+//                orderMapper.update(orders);
+            }
+            orderMapper.updateBatchly(ordersList);
+        }
     }
 }

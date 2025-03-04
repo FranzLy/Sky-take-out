@@ -25,4 +25,14 @@ public interface OrderService {
      * @param outTradeNo
      */
     void paySuccess(String outTradeNo);
+
+    /**
+     * 处理超时任务
+     */
+    void processTimeOutOrder();
+
+    /**
+     * 处理正在配送中的订单
+     */
+    void processInDeliveryOrder();
 }

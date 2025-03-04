@@ -5,6 +5,9 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface OrderMapper {
 
@@ -26,4 +29,18 @@ public interface OrderMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    /**
+     * 批量修改订单
+     * @param ordersList
+     */
+    void updateBatchly(List<Orders> ordersList);
+
+    /**
+     * 查询超时订单
+     * @return
+     */
+    @Select("select * from orders where status = #{status} and order_time < #{time}")
+    List<Orders> getTimeOutOrders(int status, LocalDateTime time);
+
 }
