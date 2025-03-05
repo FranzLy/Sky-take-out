@@ -2,8 +2,10 @@ package com.sky.service.impl;
 
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +25,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 统计营业额数据
@@ -32,15 +38,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public TurnoverReportVO getTurnoverData(LocalDate begin, LocalDate end) {
         //构建连续日期的字符串
-        List<LocalDate> dateList = new ArrayList<>();
-        if(begin.isAfter(end)) {
-            throw new RuntimeException("开始日期晚于结束日期，无法查询！");
-        }
-        LocalDate currentDate = begin;
-        while(!currentDate.isAfter(end)) {
-            dateList.add(currentDate);
-            currentDate = currentDate.plusDays(1);
-        }
+        List<LocalDate> dateList = getDateList(begin, end);
 
         //构建营业额
         //查询出的日期若当天没有订单，则sql查询不会返回，应手动设置为0.0
@@ -66,5 +64,58 @@ public class ReportServiceImpl implements ReportService {
         String dateString = StringUtils.join(dateList, ",");
         String turnoverString = StringUtils.join(amountList, ",");
         return TurnoverReportVO.builder().dateList(dateString).turnoverList(turnoverString).build();
+    }
+
+    /**
+     * 统计用户数据
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
+        //构建连续日期的字符串
+        List<LocalDate> dateList = getDateList(begin, end);
+
+        //获取每天新增用户列表
+        // select count(id) from user where create_time > '2025-02-01 00:00:00' and create_time < '2025-02-01 23:59:59'
+        List<Integer> newUserList = new ArrayList<>();
+        //获取截止每天23:59:59的总用户数
+        // select count(id) from user where create_time < '2025-02-01 23:59:59'
+        List<Integer> totalUserList = new ArrayList<>();
+
+        //视频写法，在循环中查询数据库，实际上耗时
+        for (LocalDate date : dateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            newUserList.add(userMapper.countByDate(beginTime, endTime));
+            totalUserList.add(userMapper.countByDate(null, endTime));
+        }
+
+        //封装返回
+        String dateString = StringUtils.join(dateList, ",");
+        String newUserString = StringUtils.join(newUserList, ",");
+        String totalUserString = StringUtils.join(totalUserList, ",");
+        return UserReportVO.builder().dateList(dateString).newUserList(newUserString).totalUserList(totalUserString).build();
+    }
+
+    /**
+     * 获取连续日期
+     * @param begin
+     * @param end
+     * @return
+     */
+    private List<LocalDate> getDateList(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        if(begin.isAfter(end)) {
+            throw new RuntimeException("开始日期晚于结束日期，无法查询！");
+        }
+        LocalDate currentDate = begin;
+        while(!currentDate.isAfter(end)) {
+            dateList.add(currentDate);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return dateList;
     }
 }
