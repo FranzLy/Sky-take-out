@@ -50,8 +50,8 @@
                 <foreach collection="ordersList" item="order" separator=",">
                     <if test="order.status != null"> status = CASE id WHEN #{order.id} THEN #{order.status} END,</if>
                     <if test="order.cancelTime != null"> cancel_time = CASE id WHEN #{order.id} THEN #{order.cancelTime} END,</if>
-                    <if test="order.cancelReason != null and cancelReason!='' "> cancel_reason = CASE id WHEN #{order.id} THEN #{order.cancelReason} END,</if>
-                    <if test="order.rejectionReason != null and rejectionReason!='' "> rejection_reason = CASE id WHEN #{order.id} THEN #{order.rejectionReason} END,</if>
+                    <if test="order.cancelReason != null and order.cancelReason!='' "> cancel_reason = CASE id WHEN #{order.id} THEN #{order.cancelReason} END,</if>
+                    <if test="order.rejectionReason != null and order.rejectionReason!='' "> rejection_reason = CASE id WHEN #{order.id} THEN #{order.rejectionReason} END,</if>
                     <if test="order.payStatus != null"> pay_status = CASE id WHEN #{order.id} THEN #{order.payStatus} END,</if>
                     <if test="order.payMethod != null"> pay_method = CASE id WHEN #{order.id} THEN #{order.payMethod} END,</if>
                     <if test="order.checkoutTime != null"> checkout_time = CASE id WHEN #{order.id} THEN #{order.checkoutTime} END,</if>
