@@ -87,5 +87,21 @@
         </where>
         order by order_time desc
     </select>
+    <select id="getTurnoverData" resultType="java.util.Map">
+        select date(order_time) as order_date, sum(amount) as amount from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="dates != null and dates.size() > 0">
+                and date(order_time) in
+                <foreach collection="dates" item="date" open="(" separator="," close=")">
+                    #{date}
+                </foreach>
+            </if>
+        </where>
+        group by order_date
+        order by order_date
+    </select>
 
 </mapper>

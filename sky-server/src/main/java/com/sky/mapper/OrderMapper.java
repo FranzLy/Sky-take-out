@@ -4,11 +4,15 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.Orders;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -64,4 +68,13 @@ public interface OrderMapper {
      */
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
+
+
+    /**
+     * 统计指定日期内的菜品订单金额
+     * @param dates
+     * @param status
+     * @return
+     */
+    List<Map<String, Object>> getTurnoverData(@Param("dates") List<LocalDate> dates, Integer status);
 }
