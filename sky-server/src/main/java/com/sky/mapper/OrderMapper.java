@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.Orders;
@@ -84,4 +85,21 @@ public interface OrderMapper {
      * @param endTime
      */
     Integer getOrdersCountByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
+
+    /**
+     * 查询销量排名top10
+     * @param beginTime
+     * @param endTime
+     * @param status
+     * @return
+     */
+    //SELECT od.name, SUM(od.number) as total_number
+    //FROM order_detail od, orders o
+    //WHERE od.order_id = o.id
+    //  and o.status = 5
+    //  and o.order_time > '2025-03-03 00:00:00' AND o.order_time <= '2025-03-03 23:59:59'
+    //GROUP BY name
+    //ORDER BY total_number DESC
+    //LIMIT 0,10;
+    List<GoodsSalesDTO> getGoodSalesTop10(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 }
