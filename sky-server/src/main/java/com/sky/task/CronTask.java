@@ -40,9 +40,9 @@ public class CronTask {
         webSocketServer.sendToAllClient("这是来自服务端的消息：" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()));
     }
 
-    @Scheduled(cron = "0 * * * * *")
-    public void everyMintueCronTask() {
-        log.info("每分钟的定时任务:{}", LocalDateTime.now());
+    @Scheduled(cron = "0 0/15 * * * *")
+    public void every15MinutesCronTask() {
+        log.info("每15分钟的定时任务:{}", LocalDateTime.now());
 
         // 处理超时订单
         orderService.processTimeOutOrder();
