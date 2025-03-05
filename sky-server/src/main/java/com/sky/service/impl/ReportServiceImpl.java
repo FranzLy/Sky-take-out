@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -48,14 +49,14 @@ public class ReportServiceImpl implements ReportService {
             boolean foundDate = false;
             for (Map<String, Object> map : turnoverList) {
                 String orderDate = map.get("order_date").toString();
-                Double amount = ((BigDecimal)map.get("amount")).doubleValue();
-                if(date.toString().equals(orderDate)) {
+                Double amount = ((BigDecimal) map.get("amount")).doubleValue();
+                if (date.toString().equals(orderDate)) {
                     amountList.add(amount);
                     foundDate = true;
                     break;
                 }
             }
-            if(!foundDate) {
+            if (!foundDate) {
                 amountList.add(0.0);
             }
         }
@@ -68,6 +69,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 统计用户数据
+     *
      * @param begin
      * @param end
      * @return
@@ -99,19 +101,55 @@ public class ReportServiceImpl implements ReportService {
         return UserReportVO.builder().dateList(dateString).newUserList(newUserString).totalUserList(totalUserString).build();
     }
 
+    @Override
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = getDateList(begin, end);
+
+        //获取订单总数和有效订单总数
+        List<Integer> totalOrderCountList = new ArrayList<>();
+        List<Integer> validOrderCountList = new ArrayList<>();
+        for (LocalDate date : dateList) {
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            Integer totalOrders = orderMapper.getOrdersCountByDate(beginTime, endTime, null);
+            Integer validOrders = orderMapper.getOrdersCountByDate(beginTime, endTime, Orders.COMPLETED);
+            totalOrderCountList.add(totalOrders);
+            validOrderCountList.add(validOrders);
+        }
+        Integer totalOrderCount = totalOrderCountList.stream().reduce(Integer::sum).get();
+        Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
+        Double orderCompletionRate = 0.0;
+        if (totalOrderCount != 0) {
+            orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount.doubleValue();
+        }
+
+        String dateString = StringUtils.join(dateList, ",");
+        String totalOrderCountString = StringUtils.join(totalOrderCountList, ",");
+        String validOrderCountString = StringUtils.join(validOrderCountList, ",");
+
+        return OrderReportVO.builder().dateList(dateString)
+                .orderCountList(totalOrderCountString)
+                .validOrderCountList(validOrderCountString)
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(validOrderCount)
+                .orderCompletionRate(orderCompletionRate)
+                .build();
+    }
+
     /**
      * 获取连续日期
+     *
      * @param begin
      * @param end
      * @return
      */
     private List<LocalDate> getDateList(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();
-        if(begin.isAfter(end)) {
+        if (begin.isAfter(end)) {
             throw new RuntimeException("开始日期晚于结束日期，无法查询！");
         }
         LocalDate currentDate = begin;
-        while(!currentDate.isAfter(end)) {
+        while (!currentDate.isAfter(end)) {
             dateList.add(currentDate);
             currentDate = currentDate.plusDays(1);
         }

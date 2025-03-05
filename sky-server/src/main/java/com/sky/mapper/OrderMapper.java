@@ -77,4 +77,11 @@ public interface OrderMapper {
      * @return
      */
     List<Map<String, Object>> getTurnoverData(@Param("dates") List<LocalDate> dates, Integer status);
+
+    /**
+     * 根据日期统计订单数量
+     * @param beginTime
+     * @param endTime
+     */
+    Integer getOrdersCountByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 }

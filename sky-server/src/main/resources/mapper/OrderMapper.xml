@@ -103,5 +103,19 @@
         group by order_date
         order by order_date
     </select>
+    <select id="getOrdersCountByDate" resultType="Integer">
+        select count(id) from orders
+        <where>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+            <if test = "status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 
 </mapper>
