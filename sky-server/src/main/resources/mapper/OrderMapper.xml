@@ -87,8 +87,8 @@
         </where>
         order by order_time desc
     </select>
-    <select id="getTurnoverData" resultType="java.util.Map">
-        select date(order_time) as order_date, sum(amount) as amount from orders
+    <select id="getTurnoverData" resultType="com.sky.dto.OrdersAmountDTO">
+        select date(order_time) as orderDate, sum(amount) as orderAmount from orders
         <where>
             <if test="status != null">
                 and status = #{status}
@@ -100,8 +100,8 @@
                 </foreach>
             </if>
         </where>
-        group by order_date
-        order by order_date
+        group by orderDate
+        order by orderDate
     </select>
     <select id="getOrdersCountByDate" resultType="Integer">
         select count(id) from orders

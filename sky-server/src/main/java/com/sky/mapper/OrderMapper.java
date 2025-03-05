@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.dto.GoodsSalesDTO;
+import com.sky.dto.OrdersAmountDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.Orders;
@@ -77,7 +78,7 @@ public interface OrderMapper {
      * @param status
      * @return
      */
-    List<Map<String, Object>> getTurnoverData(@Param("dates") List<LocalDate> dates, Integer status);
+    List<OrdersAmountDTO> getTurnoverData(@Param("dates") List<LocalDate> dates, Integer status);
 
     /**
      * 根据日期统计订单数量

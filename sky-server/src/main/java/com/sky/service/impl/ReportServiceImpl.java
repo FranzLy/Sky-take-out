@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.sky.dto.GoodsSalesDTO;
+import com.sky.dto.OrdersAmountDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
@@ -45,13 +46,13 @@ public class ReportServiceImpl implements ReportService {
 
         //构建营业额
         //查询出的日期若当天没有订单，则sql查询不会返回，应手动设置为0.0
-        List<Map<String, Object>> turnoverList = orderMapper.getTurnoverData(dateList, Orders.COMPLETED);
+        List<OrdersAmountDTO> turnoverList = orderMapper.getTurnoverData(dateList, Orders.COMPLETED);
         List<Double> amountList = new ArrayList<>();
         for (LocalDate date : dateList) {
             boolean foundDate = false;
-            for (Map<String, Object> map : turnoverList) {
-                String orderDate = map.get("order_date").toString();
-                Double amount = ((BigDecimal) map.get("amount")).doubleValue();
+            for (OrdersAmountDTO ordersAmountDTO : turnoverList) {
+                String orderDate = ordersAmountDTO.getOrderDate();
+                Double amount = ordersAmountDTO.getOrderAmount();
                 if (date.toString().equals(orderDate)) {
                     amountList.add(amount);
                     foundDate = true;
