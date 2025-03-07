@@ -103,4 +103,18 @@ public interface OrderMapper {
     //ORDER BY total_number DESC
     //LIMIT 0,10;
     List<GoodsSalesDTO> getGoodSalesTop10(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
+
+    /**
+     * 根据动态条件统计营业额数据
+     * @param map
+     * @return
+     */
+    Double sumByMap(Map map);
+
+    /**
+     * 根据动态条件统计订单数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }

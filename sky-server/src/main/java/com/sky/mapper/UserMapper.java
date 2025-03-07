@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -39,4 +40,11 @@ public interface UserMapper {
      * @return
      */
     Integer countByDate(LocalDateTime beginTime, LocalDateTime endTime);
+
+    /**
+     * 根据动态条件统计用户数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
