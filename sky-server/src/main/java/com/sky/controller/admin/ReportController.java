@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @RestController
@@ -83,5 +84,11 @@ public class ReportController {
         //将日期列表和订单数据封装到VO中
         SalesTop10ReportVO  reportVO = reportService.getSalesTop10(begin, end);
         return Result.success(reportVO);
+    }
+
+    @ApiOperation("运营数据统计")
+    @GetMapping("/export")
+    public void export(HttpServletResponse reponse) {
+        reportService.export(reponse);
     }
 }
